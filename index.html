@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI工具整合平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,1);
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .category-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .category-card p {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        .tools-section {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .tools-section.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .tool-card h4 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .tool-card p {
+            color: #5a6c7d;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .tool-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .feature-tag {
+            background: #3498db;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .tool-link {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .tool-link:hover {
+            background: #c0392b;
+        }
+
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: background 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            font-size: 1rem;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 20px rgba(52,152,219,0.3);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+            }
+            
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI工具整合平台</h1>
+            <p>探索最適合您需求的AI工具，提升工作效率</p>
+        </div>
+
+        <input type="text" class="search-box" placeholder="🔍 搜尋AI工具..." id="searchBox">
+
+        <div class="categories" id="categories">
+            <div class="category-card" data-category="text">
+                <span class="category-icon">📝</span>
+                <h3>文字處理</h3>
+                <p>文字生成、翻譯、校對、摘要等文字相關AI工具</p>
+            </div>
+            
+            <div class="category-card" data-category="image">
+                <span class="category-icon">🎨</span>
+                <h3>圖像創作</h3>
+                <p>AI繪圖、圖像編輯、風格轉換等視覺創作工具</p>
+            </div>
+            
+            <div class="category-card" data-category="video">
+                <span class="category-icon">🎬</span>
+                <h3>影片製作</h3>
+                <p>影片生成、剪輯、配音、字幕等影片處理工具</p>
+            </div>
+            
+            <div class="category-card" data-category="audio">
+                <span class="category-icon">🎵</span>
+                <h3>音訊處理</h3>
+                <p>語音生成、音樂創作、音訊轉換等聲音相關工具</p>
+            </div>
+            
+            <div class="category-card" data-category="code">
+                <span class="category-icon">💻</span>
+                <h3>程式開發</h3>
+                <p>程式碼生成、除錯、優化等開發輔助工具</p>
+            </div>
+            
+            <div class="category-card" data-category="business">
+                <span class="category-icon">📊</span>
+                <h3>商業應用</h3>
+                <p>數據分析、市場研究、客服等商業場景AI工具</p>
+            </div>
+        </div>
+
+        <div class="tools-section" id="toolsSection">
+            <button class="back-btn" onclick="goBack()">← 返回分類</button>
+            <h2 id="sectionTitle"></h2>
+            <div class="tools-grid" id="toolsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const aiTools = {
+            text: [
+                {
+                    name: "ChatGPT",
+                    description: "OpenAI開發的對話式AI，擅長文字生成、問答、寫作等任務",
+                    features: ["對話生成", "文章寫作", "翻譯", "程式碼"],
+                    link: "https://chat.openai.com"
+                },
+                {
+                    name: "Claude",
+                    description: "Anthropic開發的AI助手，專注於有幫助、無害且誠實的對話",
+                    features: ["長文本處理", "分析思考", "創意寫作", "程式協助"],
+                    link: "https://claude.ai"
+                },
+                {
+                    name: "Grammarly",
+                    description: "AI驅動的寫作助手，提供文法檢查和寫作建議",
+                    features: ["文法檢查", "寫作建議", "語調調整", "抄襲檢測"],
+                    link: "https://grammarly.com"
+                },
+                {
+                    name: "DeepL",
+                    description: "高品質的AI翻譯服務，支援多種語言間的精確翻譯",
+                    features: ["高品質翻譯", "文件翻譯", "即時翻譯", "API整合"],
+                    link: "https://deepl.com"
+                }
+            ],
+            image: [
+                {
+                    name: "Midjourney",
+                    description: "頂級AI圖像生成工具，能創作高品質的藝術作品",
+                    features: ["藝術創作", "風格多樣", "高解析度", "商業使用"],
+                    link: "https://midjourney.com"
+                },
+                {
+                    name: "DALL-E 3",
+                    description: "OpenAI的圖像生成模型，能理解複雜的文字描述",
+                    features: ["文字到圖像", "高品質生成", "創意設計", "安全過濾"],
+                    link: "https://openai.com/dall-e-3"
+                },
+                {
+                    name: "Canva AI",
+                    description: "整合AI功能的設計平台，簡化設計流程",
+                    features: ["模板設計", "背景移除", "魔法擦除", "文字生成"],
+                    link: "https://canva.com"
+                },
+                {
+                    name: "Adobe Firefly",
+                    description: "Adobe的創意AI工具，專為設計師打造",
+                    features: ["文字效果", "向量生成", "圖像填充", "色彩搭配"],
+                    link: "https://firefly.adobe.com"
+                }
+            ],
+            video: [
+                {
+                    name: "RunwayML",
+                    description: "創意AI工具套件，專注於影片和圖像的AI處理",
+                    features: ["影片生成", "背景移除", "動作捕捉", "風格轉換"],
+                    link: "https://runwayml.com"
+                },
+                {
+                    name: "Synthesia",
+                    description: "AI虛擬主播平台，可創建專業的AI影片",
+                    features: ["虛擬主播", "多語言支援", "自定義頭像", "腳本生成"],
+                    link: "https://synthesia.io"
+                },
+                {
+                    name: "Pictory",
+                    description: "AI影片編輯工具，將文字轉換為引人入勝的影片",
+                    features: ["文字轉影片", "自動配音", "場景選擇", "字幕生成"],
+                    link: "https://pictory.ai"
+                },
+                {
+                    name: "Luma AI",
+                    description: "3D影片生成工具，創建逼真的3D內容",
+                    features: ["3D生成", "物體掃描", "場景重建", "動畫製作"],
+                    link: "https://lumalabs.ai"
+                }
+            ],
+            audio: [
+                {
+                    name: "ElevenLabs",
+                    description: "先進的AI語音合成工具，生成逼真的人聲",
+                    features: ["語音克隆", "多語言支援", "情感表達", "即時生成"],
+                    link: "https://elevenlabs.io"
+                },
+                {
+                    name: "Murf",
+                    description: "專業的AI配音工具，適用於各種媒體項目",
+                    features: ["多種聲音", "語調調整", "背景音樂", "團隊協作"],
+                    link: "https://murf.ai"
+                },
+                {
+                    name: "AIVA",
+                    description: "AI音樂創作工具，能創作各種風格的音樂",
+                    features: ["音樂創作", "風格選擇", "樂器編排", "版權友好"],
+                    link: "https://aiva.ai"
+                },
+                {
+                    name: "Descript",
+                    description: "AI驅動的音訊和影片編輯工具",
+                    features: ["文字編輯", "語音克隆", "降噪處理", "自動轉錄"],
+                    link: "https://descript.com"
+                }
+            ],
+            code: [
+                {
+                    name: "GitHub Copilot",
+                    description: "AI程式碼助手，提供智能程式碼建議和自動完成",
+                    features: ["程式碼生成", "智能建議", "多語言支援", "VS Code整合"],
+                    link: "https://github.com/features/copilot"
+                },
+                {
+                    name: "Cursor",
+                    description: "AI驅動的程式碼編輯器，提升開發效率",
+                    features: ["AI編輯", "程式碼預測", "錯誤修復", "重構建議"],
+                    link: "https://cursor.sh"
+                },
+                {
+                    name: "Tabnine",
+                    description: "AI程式碼自動完成工具，支援多種編程語言",
+                    features: ["智能完成", "團隊學習", "隱私保護", "IDE整合"],
+                    link: "https://tabnine.com"
+                },
+                {
+                    name: "Replit",
+                    description: "雲端開發環境，整合AI編程助手",
+                    features: ["雲端開發", "AI助手", "即時協作", "一鍵部署"],
+                    link: "https://replit.com"
+                }
+            ],
+            business: [
+                {
+                    name: "Jasper",
+                    description: "企業級AI內容創作平台，提升行銷效率",
+                    features: ["內容創作", "品牌語調", "SEO優化", "團隊協作"],
+                    link: "https://jasper.ai"
+                },
+                {
+                    name: "Copy.ai",
+                    description: "AI文案生成工具，適用於各種行銷場景",
+                    features: ["文案生成", "多種模板", "語言支援", "A/B測試"],
+                    link: "https://copy.ai"
+                },
+                {
+                    name: "Notion AI",
+                    description: "整合在Notion中的AI助手，提升工作流程效率",
+                    features: ["文件協作", "內容生成", "資料整理", "任務管理"],
+                    link: "https://notion.so"
+                },
+                {
+                    name: "MonkeyLearn",
+                    description: "文字分析和機器學習平台，用於商業智能",
+                    features: ["文字分析", "情感分析", "分類標籤", "數據視覺化"],
+                    link: "https://monkeylearn.com"
+                }
+            ]
+        };
+
+        const categoryTitles = {
+            text: "文字處理工具",
+            image: "圖像創作工具",
+            video: "影片製作工具",
+            audio: "音訊處理工具",
+            code: "程式開發工具",
+            business: "商業應用工具"
+        };
+
+        function showCategory(category) {
+            document.getElementById('categories').style.display = 'none';
+            document.getElementById('toolsSection').classList.add('active');
+            document.getElementById('sectionTitle').textContent = categoryTitles[category];
+            
+            const toolsGrid = document.getElementById('toolsGrid');
+            toolsGrid.innerHTML = '';
+            
+            aiTools[category].forEach(tool => {
+                const toolCard = document.createElement('div');
+                toolCard.className = 'tool-card';
+                
+                const featuresHTML = tool.features.map(feature => 
+                    `<span class="feature-tag">${feature}</span>`
+                ).join('');
+                
+                toolCard.innerHTML = `
+                    <h4>${tool.name}</h4>
+                    <p>${tool.description}</p>
+                    <div class="tool-features">
+                        ${featuresHTML}
+                    </div>
+                    <a href="${tool.link}" class="tool-link" target="_blank">立即使用</a>
+                `;
+                
+                toolsGrid.appendChild(toolCard);
+            });
+        }
+
+        function goBack() {
+            document.getElementById('toolsSection').classList.remove('active');
+            document.getElementById('categories').style.display = 'grid';
+        }
+
+        function searchTools() {
+            const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+            if (!searchTerm) return;
+            
+            const allTools = Object.entries(aiTools).flatMap(([category, tools]) => 
+                tools.map(tool => ({...tool, category}))
+            );
+            
+            const filteredTools = allTools.filter(tool => 
+                tool.name.toLowerCase().includes(searchTerm) ||
+                tool.description.toLowerCase().includes(searchTerm) ||
+                tool.features.some(feature => feature.toLowerCase().includes(searchTerm))
+            );
+            
+            if (filteredTools.length > 0) {
+                document.getElementById('categories').style.display = 'none';
+                document.getElementById('toolsSection').classList.add('active');
+                document.getElementById('sectionTitle').textContent = `搜尋結果: "${searchTerm}"`;
+                
+                const toolsGrid = document.getElementById('toolsGrid');
+                toolsGrid.innerHTML = '';
+                
+                filteredTools.forEach(tool => {
+                    const toolCard = document.createElement('div');
+                    toolCard.className = 'tool-card';
+                    
+                    const featuresHTML = tool.features.map(feature => 
+                        `<span class="feature-tag">${feature}</span>`
+                    ).join('');
+                    
+                    toolCard.innerHTML = `
+                        <h4>${tool.name}</h4>
+                        <p>${tool.description}</p>
+                        <div class="tool-features">
+                            ${featuresHTML}
+                        </div>
+                        <a href="${tool.link}" class="tool-link" target="_blank">立即使用</a>
+                    `;
+                    
+                    toolsGrid.appendChild(toolCard);
+                });
+            }
+        }
+
+        // 事件監聽
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const category = card.dataset.category;
+                showCategory(category);
+            });
+        });
+
+        document.getElementById('searchBox').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchTools();
+            }
+        });
+
+        // 載入動畫
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.category-card').forEach((card, index) => {
+                card.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+            });
+        });
+    </script>
+</body>
+</html>
